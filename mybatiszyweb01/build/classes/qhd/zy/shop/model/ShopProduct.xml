@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="qhd.zy.shop.model.ShopProduct">
+ 	<insert id="add"  parameterType="ShopProduct">
+ 		insert into shop_product(number,price,o_id,p_id)
+ 		 value(#{number},#{price},#{orders.id},#{product.id})
+ 	</insert>
+ 	<delete id="deleteByOrders" parameterType="map">
+ 		delete from shop_product where o_id=#{oid}
+ 	</delete>
+ 	<delete id="delete" parameterType="map">
+ 		delete from shop_product where id=#{id} and o_id=#{oid}
+ 	</delete>
+ 	<update id="update" parameterType="ShopProduct">
+ 		update shop_product set number=#{number},price=#{price} where id=#{id}
+ 	</update>
+ </mapper>

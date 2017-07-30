@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="qhd.zy.shop.model.Orders">
+ 	<insert id="add"  parameterType="Orders" useGeneratedKeys="true" keyProperty="id">
+	 	insert into orders(buy_date,price,status,user_id,address_id)
+	 	value(#{buyDate},#{price},#{status},#{user.id},#{address.id})
+ 	</insert>
+ 	<delete id="delete" parameterType="int">
+ 		delete from orders where id=#{id}
+ 	</delete>
+ 	<!-- 这个方法是管理员的 -->
+ 	<update id="update" parameterType="Orders">
+ 		update orders set price=#{price},status=#{status},
+ 		pay_date=#{payDate},confirm_date=#{confirmDate}
+ 		where id=#{id}
+ 	</update>
+ 	<resultMap type="Orders" id="OrdersMap" autoMapping="true">
+ 	<!-- 所有的id都相当于主键的意思 都要设出来 column和property的值相同用autoMapping
+ 	就全部设置进去了但是只有Orders本xml可以--> 
+ 		<id column="oid" property="id"/>
+ 		<result column="buy_date" property="buyDate"/>
+ 		<result column="pay_date" property="payDate"/>
+ 		<result column="confirm_date" property="confirmDate"/>
+ 		<result column="buy_date" property="buyDate"/>
+ 		<association property="user" javaType="User">
+ 		<id column="uid" property="id"/>
+ 		<result column="username" property="username"/>
+ 		<result column="nickname" property="nickname"/>
+ 		<result column="type" property="type"/>
+ 		</association>
+ 		<association property="address" javaType="Address">
+ 		<id column="aid" property="id"/>
+ 		<result column="aname" property="name"/>
+ 		<result column="phone" property="phone"/>
+ 		<result column="postcode" property="postcode"/>
+ 		</association>
+ 		<collection property="products" ofType="ShopProduct">
+ 			<id column="sid"  property="id"/>
+ 			<result column="sprice" property="price"/>
+ 			<result column="number" property="number"/>
+ 			<result column="p_id" property="pid"/>
+ 			<association property="product" javaType="Product">
+ 				<id column="pid" property="id"/>
+ 				<result column="pname" property="name"/>
+ 				<result column="pprice" property="price"/>
+ 				<result column="pstatus" property="status"/>
+ 				<result column="img" property="img"/>
+ 				<result column="stock" property="stock"/>
+ 			</association>
+ 		</collection>
+ 	</resultMap>
+ 	<select id="load" parameterType="int" resultMap="OrdersMap">
+ 	<!-- 把相同名字的全部映射为其他名字 -->
+ 		select *,t1.id as 'oid',t1.price as 'oprice',t1.status as 'ostatus',
+ 		t2.id as 'uid',t3.id as 'aid',t3.name as 'aname',
+ 		t4.id as 'sid',t4.price as 'sprice',
+ 		t5.id as 'pid',t5.name as 'pname',t5.price as 'pprice',t5.status as 'pstatus'
+ 		from orders t1 
+ 		left join user t2 on(t1.user_id=t2.id)
+ 		left join address t3 on(t2.id=t3.user_id)
+ 		left join shop_product t4 on(t1.id=t4.o_id)
+ 		left join product t5 on(t5.id=t4.p_id)
+ 		<!-- 也能用映射前的属性 -->
+ 		where t1.id=#{id}
+ 	</select>
+ 
+ 	<select id="find_by_user"  resultMap="OrdersMap" parameterType="Map">
+ 		select *,t1.id as 'oid',t1.price as 'oprice',t1.status as 'ostatus',
+ 		t2.id as 'uid',t3.id as 'aid',t3.name as 'aname',
+ 		t4.id as 'sid',t4.price as 'sprice',
+ 		t5.id as 'pid',t5.name as 'pname',t5.price as 'pprice',t5.status as 'pstatus'
+ 		from orders t1 
+ 		left join user t2 on(t1.user_id=t2.id)
+ 		left join address t3 on(t2.id=t3.user_id)
+ 		left join shop_product t4 on(t1.id=t4.o_id)
+ 		left join product t5 on(t5.id=t4.p_id)
+ 		<where>
+ 			<if test="userId!=null">t2.id=#{userId}</if>
+ 			<if test="status!=null">and t1.status=#{status}</if>
+ 		</where>
+ 		<if test="sort!=null">order  by ${sort}</if>
+			<if test="order!=null"> ${order}</if>
+			  limit #{offset},#{pageRecord}  	
+ 	</select>
+ 	
+ 	<select id="find_by_user_count" resultType="int" parameterType="map">
+		select count(t1.id)
+ 		from  orders t1 
+ 		left join user t2 on(t1.user_id=t2.id)
+ 		<where>
+ 			<if test="userId!=null">t2.id=#{userId}</if>
+ 			<if test="status!=null">and  t1.status=#{status}</if>
+ 		</where>
+ 	</select>
+ 	<!-- 管理员查的 -->
+ 	<select id="find_by_status" resultMap="OrdersMap"  parameterType="Map">
+ 		select *,t1.id as 'oid',t1.price as 'oprice',t1.status as 'ostatus',
+ 		t2.id as 'uid',t3.id as 'aid',t3.name as 'aname',
+ 		t4.id as 'sid',t4.price as 'sprice',
+ 		t5.id as 'pid',t5.name as 'pname',t5.price as 'pprice',t5.status as 'pstatus'
+ 		from orders t1 
+ 		left join user t2 on(t1.user_id=t2.id)
+ 		left join address t3 on(t2.id=t3.user_id)
+ 		left join shop_product t4 on(t1.id=t4.o_id)
+ 		left join product t5 on(t5.id=t4.p_id)
+ 		<where>
+ 			<if test="status!=null">and t1.status=#{status}</if>
+ 		</where>
+ 		<!-- 在数据库中找值查询 -->
+ 			<if test="sort!=null">order  by ${sort}</if>
+			<if test="order!=null"> ${order}</if>
+			  limit #{offset},#{pageRecord}  	
+ 	</select>
+ 	<!--这样得到唯一的总订单（别用关联得到，关联对象也会+1） -->
+ 	<select id="find_by_status_count"  parameterType="Map" resultType="int">
+ 			select count(*)
+ 		from orders  
+ 		<where>
+ 			<if test="status!=null">and status=#{status}</if>
+ 		</where>
+ 		
+ 	</select>
+ </mapper>

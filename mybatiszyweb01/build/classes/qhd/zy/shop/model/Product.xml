@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="qhd.zy.shop.model.Product">
+ 	<insert id="add"  parameterType="Product">
+ 		insert into product(name,price,intro,img,stock,status,category_id)
+ 		 value(#{name},#{price},#{intro},#{img},#{stock},#{status},#{category.id})
+ 	</insert>
+ 	<delete id="delete" parameterType="int">
+ 		delete from product where id=#{id}
+ 	</delete>
+ 	<update id="update" parameterType="Product">
+ 		update product set name=#{name},price=#{price},status=#{status},
+ 		intro=#{intro},img=#{img},stock=#{stock},category_id=#{category.id}
+ 		 where id=#{id}
+ 	</update>
+ 	<resultMap type="Product" id="ProductMap" autoMapping="true">
+ 	<!-- column中为下面查出来的值 -->
+ 		<id column="id" property="id"/>
+ 		<association property="category" javaType="Category">
+ 			<id column="c_id"  property="id"/>
+ 			<result column="c_name" property="name"/>
+ 		</association>
+ 	</resultMap>
+ 	<select id="load" parameterType="int" resultMap="ProductMap">
+ 		select *,t2.id as 'c_id',t2.name as 'c_name' from product t1 left join category t2 on(t1.category_id=t2.id) where t1.id=#{id}
+ 	</select>
+
+ 	<!-- 每个引号后面要个空格 -->
+ 	<select id="find"  parameterType="Map" resultMap="ProductMap">
+ 		select *,t2.id as 'c_id',t2.name as 'c_name' from product t1 left join category t2 on(t1.category_id=t2.id)
+ 		<where>
+ 			<if test="cid!=null">c_id=#{cid}</if>
+ 			<if test="name!=null">and t1.name like #{name}</if>
+ 			<if test="status!=null">and status=#{status}</if>
+ 		</where>
+ 		<if test="sort!=null">order  by ${sort}</if>
+			<if test="order!=null"> ${order}</if>
+			  limit #{offset},#{pageRecord}  	
+ 	</select>
+ 	<select id="findTotal" parameterType="map" resultType="int">
+ 			select count(*) from product
+ 			<where>
+ 			<if test="cid!=null">c_id=#{cid}</if>
+ 			<if test="name!=null">and t1.name like #{name}</if>
+ 			<if test="status!=null">and status=#{status}</if>
+ 		</where>
+ 	</select>
+ </mapper>

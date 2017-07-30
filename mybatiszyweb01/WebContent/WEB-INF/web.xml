@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  
+  <filter>
+    <filter-name>sitemesh</filter-name>
+    <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>sitemesh</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <servlet>
+    <servlet-name>Test01</servlet-name>
+    <servlet-class>TestMybatis.Test01</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Test01</servlet-name>
+    <url-pattern>/01/hello.do</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>qhd.zy.shop.web.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>Encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>SystemContextFilter</filter-name>
+    <filter-class>qhd.zy.shop.web.SystemContextFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SystemContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <servlet>
+    <servlet-name>UserServlet</servlet-name>
+    <servlet-class>qhd.zy.shop.web.UserServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserServlet</servlet-name>
+    <url-pattern>/user.do</url-pattern>
+  </servlet-mapping>
+   <servlet>
+    <servlet-name>ProductServlet</servlet-name>
+    <servlet-class>qhd.zy.shop.web.ProductServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProductServlet</servlet-name>
+    <url-pattern>/product.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>AddressServlet</servlet-name>
+    <servlet-class>qhd.zy.shop.web.AddressServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AddressServlet</servlet-name>
+    <url-pattern>/address.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>CategoryServlet</servlet-name>
+    <servlet-class>qhd.zy.shop.web.CategoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CategoryServlet</servlet-name>
+    <url-pattern>/category.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>OrdersServlet</servlet-name>
+    <servlet-class>qhd.zy.shop.web.OrdersServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OrdersServlet</servlet-name>
+    <url-pattern>/orders.do</url-pattern>
+  </servlet-mapping>
+</web-app>

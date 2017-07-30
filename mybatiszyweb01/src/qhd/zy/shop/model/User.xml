@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="qhd.zy.shop.model.User">
+ 	<insert id="add"  parameterType="User">
+ 		insert into user(username,password,nickname,type)
+ 		 value(#{username},#{password},#{nickname},#{type})
+ 	</insert>
+ 	<delete id="delete" parameterType="int">
+ 		delete from user where id=#{id}
+ 	</delete>
+ 	<update id="update" parameterType="User">
+ 		update user set password=#{password},nickname=#{nickname} 
+ 		,type=#{type}
+ 		where id=#{id}
+ 	</update>
+ 	<resultMap type="User" id="userMap" autoMapping="true">
+ 		<id column="user_id" property="id"/>
+ 		<result column="username" property="username"/>
+ 		<collection property="addresses" ofType="Address">
+ 			<id column="a_id"  property="id"/>
+ 			<result column="name" property="name"/>
+ 			<result column="phone" property="phone"/>
+ 			<result column="postcode" property="postcode"/>
+ 		</collection>
+ 	</resultMap>
+ 	<select id="load" parameterType="int" resultMap="userMap">
+ 		select *,t2.id as 'a_id' from user t1 left join address t2 on(t1.id=t2.user_id) where t1.id=#{id}
+ 	</select>
+ <!-- 	<select id="load" parameterType="int" resultType="User">
+ 		select * from user where id=#{id}
+ 	</select> -->
+ 	<!-- 每个引号后面要个空格 -->
+ 	<select id="loadMore" resultType="User" parameterType="Map">
+ 		select  *  from user
+ 		<where>
+ 			<if test="nickname!=null">nickname=#{nickname}</if>
+ 			<if test="username!=null">or username=#{username}</if>
+ 		</where>
+ 	</select>
+ 	
+ 	<select id="loadUsername" parameterType="String" resultType="User">
+ 		select * from user where username=#{username}
+ 	</select>
+ 	<select id="find" resultType="User" parameterType="Map">
+ 	<!-- 用#好就是用？类似（parperament）'值'  用$就是直接引用 没有''-->
+ 			select * from user 
+ 			<where>
+ 				<if test="name!=null"> (username like #{name} or nickname like #{name})</if>
+ 				<if test="type!=null">and  type=${type}</if>
+ 			</where>
+			<if test="sort!=null">order  by ${sort}</if>
+			<if test="order!=null"> ${order}</if>
+			  limit #{offset},#{pageRecord}  		
+ 	</select>
+ 	<!-- 只要一个int就能找到总数 -->
+ 	<select id="findTotal" parameterType="map" resultType="int">
+ 			select count(*) from user 
+ 			<if test="name!=null">where  (username like #{name} or nickname like #{name})</if>
+ 	</select>
+ 	<select id="	list" parameterType="Map" resultType="User">
+ 		select * from user 
+ 			<if test="listnotpage!=null">where (username like #{listnotpage} or nickname like #{listnotpage})</if>
+ 	</select>
+ </mapper>

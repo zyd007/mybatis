@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="qhd.zy.shop.model.Address">
+  	<insert id="add" parameterType="Address">
+  		insert into address(name,phone,postcode,user_id) 
+  		value(#{name},#{phone},#{postcode},#{user.id})
+  	</insert>
+  	<delete id="delete" parameterType="int">
+  			delete from address where id=#{id}
+  	</delete>
+  	<update id="update" parameterType="Address">
+  			update address set name=#{name},postcode=#{postcode},
+  			phone=#{phone} where id=#{id}
+  	</update>
+  	<select id="load" parameterType="int" resultMap="listAddress">
+  		select *,t1.id as 'a_id' from address t1 right join user t2 on(t1.user_id=t2.id)
+  		where t1.id=#{id};	
+  	</select>
+  	<resultMap type="Address" id="listAddress" autoMapping="true">
+  		<id column="a_id" property="id"/>
+  		<association property="user" javaType="User">
+  			<id column="user_id" property="id"/>
+  			<result column="username" property="username"/>
+  			<result column="password" property="password"/>
+  			<result column="nickname" property="nickname"/> 
+  			<result column="type" property="type"/>
+  		</association>
+  	</resultMap>
+  	<select id="list" parameterType="map" resultMap="listAddress">
+  	<!-- 一个一个的address找 找成的结果为List -->
+  		select *,t1.id as 'a_id' from address t1 right join user t2 on(t1.user_id=t2.id)
+  		where t2.id=#{userid};
+  	</select>
+  </mapper>
